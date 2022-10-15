@@ -1,15 +1,12 @@
 package main
 
 import (
+	"crud/db"
 	"log"
-
-	_ "github.com/lib/pq"
-
-	"crud/internal/app"
 )
 
 func main() {
-	if err := app.Run(); err != nil {
+	if err := db.InitDB(); err != nil {
 		log.Fatalln(err)
 	}
 }
