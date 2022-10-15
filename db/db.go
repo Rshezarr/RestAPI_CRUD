@@ -16,7 +16,7 @@ const (
 	Username = "postgres"
 	Password = "qwerty"
 	DBName   = "postgres"
-	SSLmode  = "disabled"
+	SSLmode  = "disable"
 
 	userTable = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
