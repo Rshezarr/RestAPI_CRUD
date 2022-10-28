@@ -23,8 +23,15 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		log.Printf("Read body - %v", err)
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("new decode - %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.Unmarshal(data, &u); err != nil {
+		log.Printf("unmarshal - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -44,6 +51,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 	u := user.User{
 		ID: id,
 	}
@@ -63,42 +71,26 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func UpdateUserHeader(w http.ResponseWriter, r *http.Request) {
-	// id := mux.Vars(r)["id"]
-	// if err != nil {
-	// 	log.Printf("Get id - %v", err)
-	// 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	// 	return
-	// }
-	client := &http.Client{}
-
-	req, err := http.NewRequest(http.MethodPut, "http://localhost:8080/user/25", r.Body)
+func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("new req - %v", err)
+		log.Printf("Get id - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("client do - %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+	u2 := user.User{
+		ID: id,
 	}
 
-	w.Header().Set("content-type", "application/json")
-	w.Write([]byte("pffff"))
-
-	readall, err := ioutil.ReadAll(resp.Body)
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("new decode - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	var u2 user.User
-
-	if err := json.Unmarshal(readall, u2); err != nil {
+	if err := json.Unmarshal(data, &u2); err != nil {
 		log.Printf("unmarshal - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -109,4 +101,26 @@ func UpdateUserHeader(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		log.Printf("Get id - %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	u := user.User{
+		ID: id,
+	}
+
+	if err := u.DeleteUserByID(); err != nil {
+		log.Printf("delete - %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
 }

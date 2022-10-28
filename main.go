@@ -15,9 +15,10 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/user/", users.CreateUserHandler).Methods(http.MethodPost)
-	r.HandleFunc("/user/", users.GetUserHandler).Methods(http.MethodGet)
-	r.HandleFunc("/user/", users.UpdateUserHeader).Methods(http.MethodPut)
+	r.HandleFunc("/user/{id}", users.CreateUserHandler).Methods(http.MethodPost)
+	r.HandleFunc("/user/{id}", users.GetUserHandler).Methods(http.MethodGet)
+	r.HandleFunc("/user/{id}", users.UpdateUserHandler).Methods(http.MethodPut)
+	r.HandleFunc("/user/{id}", users.DeleteUserHandler).Methods(http.MethodDelete)
 
 	s := http.Server{
 		Addr:    ":8080",
