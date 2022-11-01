@@ -80,20 +80,9 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u2 := user.User{
-		ID: id,
-	}
-
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Printf("new decode - %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if err := json.Unmarshal(data, &u2); err != nil {
-		log.Printf("unmarshal - %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		ID:        id,
+		FirstName: r.FormValue("first_name"),
+		LastName:  r.FormValue("last_name"),
 	}
 
 	if err := u2.UpdateUserByID(); err != nil {

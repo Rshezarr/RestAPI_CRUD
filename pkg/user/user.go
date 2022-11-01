@@ -11,6 +11,9 @@ type User struct {
 	LastName  string `json:"last_name"`
 }
 
+// docker run --name=crud-db -e POSTGRES_PASSWORD='qwerty' -p 5436:5432 -d --rm postgres
+// docker exec -it crud-db bash
+
 func (u *User) CreateUser() error {
 	query := `INSERT INTO users (first_name, last_name) VALUES ($1, $2);`
 	_, err := db.DB.Exec(query, u.FirstName, u.LastName)
