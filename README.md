@@ -31,11 +31,11 @@ $ docker exec -it crud-db bash
 $ go run .
 ```
 
-Server starts at port 8080. You can create and etc. by using Postman
+Server starts at port 8080. By using Postman, you can do create, read etc. queries.
 
 ## Author
 
-Rakhat (@Rshezar)
+Rakhat (@Rshezarr)
 
 ## Tools used in this project
 
