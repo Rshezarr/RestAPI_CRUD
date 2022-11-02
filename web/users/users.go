@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -63,6 +64,11 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	d := strings.Split(usr, " ")
+	u.Data.FirstName = d[0]
+	u.Data.LastName = d[1]
+	u.Data.Interests = d[2]
+
 	if err := json.NewEncoder(w).Encode(&usr); err != nil {
 		log.Printf("Encode - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -80,9 +86,12 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u2 := user.User{
-		ID:        id,
-		FirstName: r.FormValue("first_name"),
-		LastName:  r.FormValue("last_name"),
+		ID: id,
+		Data: user.Data{
+			FirstName: r.FormValue("first_name"),
+			LastName:  r.FormValue("last_name"),
+			Interests: r.FormValue("interests"),
+		},
 	}
 
 	if err := u2.UpdateUserByID(); err != nil {

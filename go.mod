@@ -8,4 +8,7 @@ require (
 	github.com/lib/pq v1.10.7
 )
 
-require github.com/mattn/go-sqlite3 v1.14.10 // indirect
+require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/mattn/go-sqlite3 v1.14.10 // indirect
+)

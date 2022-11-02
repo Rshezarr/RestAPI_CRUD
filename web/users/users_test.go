@@ -4,16 +4,22 @@ import (
 	"bytes"
 	model "crud/pkg/user"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"testing"
 )
 
-func Test_CreateUser(t *testing.T) {
+func Test_User(t *testing.T) {
+	id := "14"
 	//Create
 	u := model.User{
-		FirstName: "ezio",
-		LastName:  "auditore",
+		Data: model.Data{
+			FirstName: "test_first_name_01",
+			LastName:  "test_first_name_01",
+			Interests: "test_interest1_01,test_interest2_01",
+		},
 	}
 
 	postRes, err := json.Marshal(u)
@@ -21,7 +27,7 @@ func Test_CreateUser(t *testing.T) {
 		log.Fatalf("create: marshal - %v\n", err)
 	}
 
-	resp, err := http.Post("http://localhost:8080/user/1", "application/json", bytes.NewBuffer(postRes))
+	resp, err := http.Post("http://localhost:8080/user/"+id, "application/json", bytes.NewBuffer(postRes))
 	if err != nil {
 		log.Fatalf("create: post - %v\n", err)
 	}
@@ -33,23 +39,32 @@ func Test_CreateUser(t *testing.T) {
 	//Read
 	var u2 model.User
 
-	resp2, err := http.Get("http://localhost:8080/user/1")
+	resp2, err := http.Get("http://localhost:8080/user/" + id)
 	if err != nil {
 		log.Fatalf("read: get - %v\n", err)
 	}
 
-	if err = json.NewDecoder(resp2.Body).Decode(&u2); err != nil {
+	data, err := ioutil.ReadAll(resp2.Body)
+	if err != nil {
+		log.Fatalf("read: read ioutil - %v\n", err)
+	}
+
+	if err := json.Unmarshal(data, &u2); err != nil {
+		log.Println(string(data))
 		log.Fatalf("read: unmarshal - %v\n", err)
 	}
 
-	if u.FirstName != u2.FirstName || u.LastName != u2.LastName {
+	if u.Data.FirstName != u2.Data.FirstName || u.Data.LastName != u2.Data.LastName || u.Data.Interests != u2.Data.Interests {
 		log.Fatalln("read: fields doesn't match")
 	}
 
 	//Update
 	u3 := model.User{
-		FirstName: "ezio2",
-		LastName:  "auditore2",
+		Data: model.Data{
+			FirstName: "test_first_name_02",
+			LastName:  "test_first_name_02",
+			Interests: "test_interest1_02,test_interest2_02",
+		},
 	}
 
 	updRes, err := json.Marshal(u3)
@@ -57,7 +72,9 @@ func Test_CreateUser(t *testing.T) {
 		log.Fatalf("update: marshal - %v\n", err)
 	}
 
-	updReq, err := http.NewRequest(http.MethodPut, "http://localhost:8080/user/1", bytes.NewBuffer(updRes))
+	testUpdURL := fmt.Sprintf("%s?first_name=%s&last_name=%s&interests=%s", id, u3.FirstName, u3.LastName, u3.Interests)
+
+	updReq, err := http.NewRequest(http.MethodPut, "http://localhost:8080/user/"+testUpdURL, bytes.NewBuffer(updRes))
 	if err != nil {
 		log.Fatalf("update: new request - %v\n", err)
 	}
@@ -72,7 +89,7 @@ func Test_CreateUser(t *testing.T) {
 	}
 
 	//Delete
-	delReq, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/user/1", nil)
+	delReq, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/user/"+id, nil)
 	if err != nil {
 		log.Fatalf("delete: new request - %v\n", err)
 	}

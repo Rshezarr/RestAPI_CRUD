@@ -1,87 +1,104 @@
 package user
 
-import "testing"
+import (
+	DataBase "crud/db"
+	"log"
+	"strings"
+	"testing"
 
-// import (
-// 	DataBase "crud/db"
-// 	"log"
-// 	"testing"
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
+)
 
-// 	"github.com/DATA-DOG/go-sqlmock"
-// 	"github.com/jmoiron/sqlx"
-// )
+func TestCRUD(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
 
-func TestCRUD(t *testing.T) {}
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+	DataBase.DB = sqlxDB
 
-// 	db, mock, err := sqlmock.New()
-// 	if err != nil {
-// 		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-// 	}
+	//CREATE USER
+	u1 := User{
+		Data: Data{
+			FirstName: "test_first_name_01",
+			LastName:  "test_last_name_01",
+			Interests: "test_interest1_01,test_interest2_01",
+		},
+	}
 
-// 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-// 	DataBase.DB = sqlxDB
+	temp := []string{u1.Data.FirstName, u1.Data.LastName, u1.Data.Interests}
+	data := strings.Join(temp, " ")
 
-// 	//CREATE USER
-// 	u1 := User{FirstName: "test_first_name_01", LastName: "test_last_name_01"}
-// 	mock.ExpectExec(`INSERT INTO users`).WithArgs(u1.FirstName, u1.LastName).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`INSERT INTO users`).WithArgs(data).WillReturnResult(sqlmock.NewResult(1, 1))
 
-// 	err = u1.CreateUser()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	err = u1.CreateUser()
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	if err = mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("there were unfulfilled expectations: %s", err)
-// 	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 
-// 	//READ USER
-// 	mock.ExpectQuery(`SELECT`).WithArgs(u1.ID).WillReturnRows(sqlmock.NewRows([]string{"id", "first_name", "last_name"}).AddRow(u1.ID, u1.FirstName, u1.LastName))
+	//READ USER
+	mock.ExpectQuery(`SELECT`).WithArgs(u1.ID).WillReturnRows(sqlmock.NewRows([]string{"data"}).AddRow(data))
 
-// 	_, err = u1.GetUserByID()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	_, err = u1.GetUserByID()
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	if err = mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("there were unfulfilled expectations: %s", err)
-// 	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 
-// 	//UPDATE USER
-// 	u2 := User{FirstName: "test_first_name_02", LastName: "test_last_name_02"}
-// 	mock.ExpectExec(`UPDATE users SET`).WithArgs(u2.FirstName, u2.LastName, u2.ID).WillReturnResult(sqlmock.NewResult(1, 1))
+	//UPDATE USER
+	u2 := User{
+		Data: Data{
+			FirstName: "test_first_name_02",
+			LastName:  "test_last_name_02",
+			Interests: "test_interest_02,test_interest_02",
+		},
+	}
 
-// 	err = u2.UpdateUserByID()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	temp = []string{u2.Data.FirstName, u2.Data.LastName, u2.Data.Interests}
+	data = strings.Join(temp, " ")
+	mock.ExpectExec(`UPDATE users SET`).WithArgs(data, u1.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 
-// 	if err = mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("there were unfulfilled expectations: %s", err)
-// 	}
+	err = u2.UpdateUserByID()
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	//READ UPDATED USER
-// 	mock.ExpectQuery(`SELECT`).WithArgs(u1.ID).WillReturnRows(sqlmock.NewRows([]string{"id", "first_name", "last_name"}).AddRow(u2.ID, u2.FirstName, u2.LastName))
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 
-// 	_, err = u2.GetUserByID()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	//READ UPDATED USER
+	mock.ExpectQuery(`SELECT`).WithArgs(u1.ID).WillReturnRows(sqlmock.NewRows([]string{"data"}).AddRow(data))
 
-// 	if err = mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("there were unfulfilled expectations: %s", err)
-// 	}
+	_, err = u2.GetUserByID()
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	//DELETE USER
-// 	mock.ExpectExec(`DELETE FROM users`).WithArgs(u1.ID).WillReturnResult(sqlmock.NewResult(1, 1))
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 
-// 	err = u2.DeleteUserByID()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
+	//DELETE USER
+	mock.ExpectExec(`DELETE FROM users`).WithArgs(u1.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 
-// 	if err = mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("there were unfulfilled expectations: %s", err)
-// 	}
+	err = u2.DeleteUserByID()
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	defer DataBase.DB.Close()
-// }
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	defer DataBase.DB.Close()
+}
