@@ -2,8 +2,8 @@ package user
 
 import (
 	DataBase "crud/db"
+	"fmt"
 	"log"
-	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -28,8 +28,7 @@ func TestCRUD(t *testing.T) {
 		},
 	}
 
-	temp := []string{u1.Data.FirstName, u1.Data.LastName, u1.Data.Interests}
-	data := strings.Join(temp, " ")
+	data := fmt.Sprintf("%s %s %s", u1.Data.FirstName, u1.Data.LastName, u1.Data.Interests)
 
 	mock.ExpectExec(`INSERT INTO users`).WithArgs(data).WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -63,8 +62,8 @@ func TestCRUD(t *testing.T) {
 		},
 	}
 
-	temp = []string{u2.Data.FirstName, u2.Data.LastName, u2.Data.Interests}
-	data = strings.Join(temp, " ")
+	data = fmt.Sprintf("%s %s %s", u2.Data.FirstName, u2.Data.LastName, u2.Data.Interests)
+
 	mock.ExpectExec(`UPDATE users SET`).WithArgs(data, u1.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = u2.UpdateUserByID()

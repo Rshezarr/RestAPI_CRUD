@@ -12,7 +12,7 @@ import (
 )
 
 func Test_User(t *testing.T) {
-	id := "14"
+	id := "3"
 	//Create
 	u := model.User{
 		Data: model.Data{
@@ -29,7 +29,7 @@ func Test_User(t *testing.T) {
 
 	resp, err := http.Post("http://localhost:8080/user/"+id, "application/json", bytes.NewBuffer(postRes))
 	if err != nil {
-		log.Fatalf("create: post - %v\n", err)
+		log.Fatalf("create: repsonse - %v\n", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {

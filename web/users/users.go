@@ -15,7 +15,7 @@ import (
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("Get id - %v", err)
+		log.Printf("get id - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -38,7 +38,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := u.CreateUser(); err != nil {
-		log.Printf("Create User - %v", err)
+		log.Printf("create User - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -48,7 +48,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("Get id - %v", err)
+		log.Printf("get id - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -57,20 +57,19 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	}
 
-	usr, err := u.GetUserByID()
+	data, err := u.GetUserByID()
 	if err != nil {
-		log.Printf("Get User - %v", err)
+		log.Printf("get User - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-
-	d := strings.Split(usr, " ")
+	d := strings.Fields(data[0])
 	u.Data.FirstName = d[0]
 	u.Data.LastName = d[1]
 	u.Data.Interests = d[2]
 
-	if err := json.NewEncoder(w).Encode(&usr); err != nil {
-		log.Printf("Encode - %v", err)
+	if err := json.NewEncoder(w).Encode(&u); err != nil {
+		log.Printf("encode - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -80,7 +79,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("Get id - %v", err)
+		log.Printf("get id - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -106,7 +105,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("Get id - %v", err)
+		log.Printf("get id - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

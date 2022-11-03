@@ -3,7 +3,6 @@ package user
 import (
 	"crud/db"
 	"fmt"
-	"strings"
 )
 
 type User struct {
@@ -21,32 +20,27 @@ type Data struct {
 // docker exec -it crud-db bash
 
 func (u *User) CreateUser() error {
-	query := `INSERT INTO users (data) VALUES ($1);`
-	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
-	data := strings.Join(temp, " ")
-	_, err := db.DB.Exec(query, data)
+	data := fmt.Sprintf("%s %s %s", u.Data.FirstName, u.Data.LastName, u.Data.Interests)
+	_, err := db.DB.NamedExec(`INSERT INTO users (data) VALUES (:data);`, map[string]interface{}{"data": data})
 	if err != nil {
 		return fmt.Errorf("create user - %v", err)
 	}
 	return nil
 }
 
-func (u *User) GetUserByID() (string, error) {
-	query := `SELECT data FROM users WHERE id = $1;`
-	var data string
-	if err := db.DB.QueryRow(query, u.ID).Scan(&data); err != nil {
-		return "", fmt.Errorf("get user - %v", err)
+func (u *User) GetUserByID() ([]string, error) {
+	var data []string
+	err := db.DB.Select(&data, `SELECT data FROM users WHERE id = $1;`, u.ID)
+	if err != nil {
+		return nil, fmt.Errorf("get user - %v", err)
 	}
 
 	return data, nil
 }
 
 func (u *User) UpdateUserByID() error {
-	query := `UPDATE users SET data = $1 WHERE id = $2;`
-	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
-	data := strings.Join(temp, " ")
-
-	_, err := db.DB.Exec(query, data, u.ID)
+	data := fmt.Sprintf("%s %s %s", u.Data.FirstName, u.Data.LastName, u.Data.Interests)
+	_, err := db.DB.NamedExec(`UPDATE users SET data = :data WHERE id = :id;`, map[string]interface{}{"data": data, "id": u.ID})
 	if err != nil {
 		return fmt.Errorf("update user - %v", err)
 	}
@@ -54,8 +48,7 @@ func (u *User) UpdateUserByID() error {
 }
 
 func (u *User) DeleteUserByID() error {
-	query := `DELETE FROM users WHERE id = $1;`
-	_, err := db.DB.Exec(query, u.ID)
+	_, err := db.DB.NamedExec(`DELETE FROM users WHERE id = :id;`, map[string]interface{}{"id": u.ID})
 	if err != nil {
 		return fmt.Errorf("delete user - %v", err)
 	}
