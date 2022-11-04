@@ -16,7 +16,7 @@ const (
 	userTable = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		data VARCHAR
-		);`
+	);`
 )
 
 func InitDB() error {
@@ -26,19 +26,18 @@ func InitDB() error {
 
 	var err error
 	conn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		viper.GetString("services.postgres.environment.3"),  //host
-		viper.GetString("services.postgres.environment.4"),  //port
-		viper.GetString("services.postgres.container_name"), // user
-		viper.GetString("services.postgres.container_name"), //dbname
-		viper.GetString("services.postgres.environment.2"),  //password
-		viper.GetString("services.postgres.environment.5"),  //sslmode
+		viper.GetString("services.postgres.configs.0"), //host
+		viper.GetString("services.postgres.expose.0"),  //port
+		viper.GetString("services.postgres.configs.1"), // user
+		viper.GetString("services.postgres.configs.1"), //dbname
+		viper.GetString("services.postgres.configs.2"), //password
+		viper.GetString("services.postgres.configs.3"), //sslmode
 	)
 
 	fmt.Println(conn)
 
 	DB, err = sqlx.Connect(viper.GetString("services.postgres.container_name"), conn)
 	if err != nil {
-		fmt.Println(viper.GetString("services.postgres.container_name"))
 		return fmt.Errorf("ERROR: %v", err)
 	}
 
@@ -50,7 +49,6 @@ func InitDB() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
