@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=builder /app .
 RUN apk add bash
 EXPOSE 8080
-ENTRYPOINT ["/app/api_main"]
+CMD ["/app/api_main"]

@@ -2,8 +2,10 @@ package db
 
 import (
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
+	"github.com/spf13/viper"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -11,13 +13,6 @@ import (
 var DB *sqlx.DB
 
 const (
-	Host     = "localhost"
-	Port     = "5436"
-	Username = "postgres"
-	Password = "qwerty"
-	DBName   = "postgres"
-	SSLmode  = "disable"
-
 	userTable = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		data VARCHAR
@@ -25,11 +20,26 @@ const (
 )
 
 func InitDB() error {
+	if err := InitConfigs(); err != nil {
+		log.Fatalf("ERROR: %v\n", err)
+	}
+
 	var err error
-	DB, err = sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		Host, Port, Username, DBName, Password, SSLmode))
+	conn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		viper.GetString("services.postgres.environment.3"),  //host
+		viper.GetString("services.postgres.environment.4"),  //port
+		viper.GetString("services.postgres.container_name"), // user
+		viper.GetString("services.postgres.container_name"), //dbname
+		viper.GetString("services.postgres.environment.2"),  //password
+		viper.GetString("services.postgres.environment.5"),  //sslmode
+	)
+
+	fmt.Println(conn)
+
+	DB, err = sqlx.Connect(viper.GetString("services.postgres.container_name"), conn)
 	if err != nil {
-		return err
+		fmt.Println(viper.GetString("services.postgres.container_name"))
+		return fmt.Errorf("ERROR: %v", err)
 	}
 
 	if err := DB.Ping(); err != nil {
@@ -42,4 +52,10 @@ func InitDB() error {
 	}
 
 	return nil
+}
+
+func InitConfigs() error {
+	viper.AddConfigPath(".")
+	viper.SetConfigName("docker-compose")
+	return viper.ReadInConfig()
 }

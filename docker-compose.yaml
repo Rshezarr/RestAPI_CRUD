@@ -1,20 +1,22 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:13-alpine
     container_name: postgres
     restart: always
     ports: 
-    - "5436:5432"
+      - "5432:5432"
     environment:
-    - POSTGRES_PASSWORD=qwerty
-    - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_USER=postgres
+      - qwerty
+      - "172.25.0.4"
+      - "5432"
+      - disable
     # no permission in alem computers
     # uncomment at home laptop
     # volumes:
     #  - ./local_pgdata:/var/lib/postgresql/data
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
@@ -33,10 +35,6 @@ services:
     build: .
     ports:
      - "8080:8080"
-
-
-
-
 
 # no permission in alem computers
 # uncomment at home laptop
