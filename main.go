@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	if err := db.InitDB(); err != nil {
 		log.Fatalln(err)
 	}
