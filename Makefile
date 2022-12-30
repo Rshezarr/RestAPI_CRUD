@@ -1,3 +1,6 @@
+run:
+	go run main.go
+
 build:
 	go build -o api_main main.go
 

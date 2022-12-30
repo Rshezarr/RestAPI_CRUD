@@ -12,14 +12,14 @@ In particular, you can: create, read, update and delete a user from the database
 1. Open terminal and type command below to start database by docker:
 
 ```
-$ docker run --name=crud-db -e POSTGRES_PASSWORD='qwerty' -p 5436:5432 -d --rm postgres
-
-$ docker exec -it crud-db bash
+$ make dbrun
 ```
 
 2. In purpose to check database fields run command:
 
 ```
+# docker exec -it $DATABASE_NAME bash
+
 # psql -U postgres
 ```
 
@@ -28,7 +28,7 @@ $ docker exec -it crud-db bash
 1. Type in terminal in main directory
 
 ```
-$ go run .
+$ make run
 ```
 
 Server starts at port 8080. By using Postman, you can do create, read etc. queries.
