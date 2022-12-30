@@ -1,8 +1,6 @@
 package db
 
 import (
-	"fmt"
-
 	_ "github.com/lib/pq"
 
 	"github.com/jmoiron/sqlx"
@@ -11,12 +9,8 @@ import (
 var DB *sqlx.DB
 
 const (
-	Host     = "localhost"
-	Port     = "5436"
-	Username = "postgres"
-	Password = "qwerty"
-	DBName   = "postgres"
-	SSLmode  = "disable"
+	driver      = "postgres"
+	databaseUrl = "host=localhost port=5432 user=postgres dbname=postgres password=qwerty sslmode=disable"
 
 	userTable = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
@@ -27,8 +21,7 @@ const (
 
 func InitDB() error {
 	var err error
-	DB, err = sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		Host, Port, Username, DBName, Password, SSLmode))
+	DB, err = sqlx.Open(driver, databaseUrl)
 	if err != nil {
 		return err
 	}
