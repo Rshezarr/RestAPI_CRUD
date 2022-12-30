@@ -7,22 +7,36 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 )
 
 func main() {
+	if err := initConfigs(); err != nil {
+		log.Fatalf("init configs: %v", err)
+	}
+
 	if err := db.InitDB(); err != nil {
 		log.Fatalln(err)
 	}
 
-	r := mux.NewRouter()
-	r.HandleFunc("/user/{id}", users.CreateUserHandler).Methods(http.MethodPost)
-	r.HandleFunc("/user/{id}", users.GetUserHandler).Methods(http.MethodGet)
-	r.HandleFunc("/user/{id}", users.UpdateUserHandler).Methods(http.MethodPut)
-	r.HandleFunc("/user/{id}", users.DeleteUserHandler).Methods(http.MethodDelete)
+	router := mux.NewRouter()
 
-	s := http.Server{
-		Addr:    ":8080",
-		Handler: r,
+	router.HandleFunc("/user/{id}", users.CreateUserHandler).Methods(http.MethodPost)
+	router.HandleFunc("/user/{id}", users.GetUserHandler).Methods(http.MethodGet)
+	router.HandleFunc("/user/{id}", users.UpdateUserHandler).Methods(http.MethodPut)
+	router.HandleFunc("/user/{id}", users.DeleteUserHandler).Methods(http.MethodDelete)
+
+	srv := http.Server{
+		Addr:    viper.GetString("port"),
+		Handler: router,
 	}
-	s.ListenAndServe()
+
+	srv.ListenAndServe()
+}
+
+func initConfigs() error {
+	viper.AddConfigPath(".")
+	viper.SetConfigName("development")
+	viper.SetConfigType("yaml")
+	return viper.ReadInConfig()
 }

@@ -2,18 +2,20 @@ package users
 
 import (
 	"bytes"
-	model "crud/pkg/user"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"testing"
+
+	model "crud/pkg/user"
 )
 
-func Test_User(t *testing.T) {
-	id := "3"
-	//Create
+var id string = "1"
+
+// Create
+func Test_CreateUser(t *testing.T) {
 	u := model.User{
 		Data: model.Data{
 			FirstName: "test_first_name_01",
@@ -35,8 +37,17 @@ func Test_User(t *testing.T) {
 	if resp.StatusCode != http.StatusCreated {
 		log.Fatalf("create: create status code - %v\n", err)
 	}
+}
 
-	//Read
+// Read
+func Test_ReadUser(t *testing.T) {
+	u := model.User{
+		Data: model.Data{
+			FirstName: "test_first_name_01",
+			LastName:  "test_first_name_01",
+			Interests: "test_interest1_01,test_interest2_01",
+		},
+	}
 	var u2 model.User
 
 	resp2, err := http.Get("http://localhost:8080/user/" + id)
@@ -49,16 +60,19 @@ func Test_User(t *testing.T) {
 		log.Fatalf("read: read ioutil - %v\n", err)
 	}
 
+	fmt.Printf("DATA: %T\n", data)
+
 	if err := json.Unmarshal(data, &u2); err != nil {
-		log.Println(string(data))
 		log.Fatalf("read: unmarshal - %v\n", err)
 	}
 
 	if u.Data.FirstName != u2.Data.FirstName || u.Data.LastName != u2.Data.LastName || u.Data.Interests != u2.Data.Interests {
 		log.Fatalln("read: fields doesn't match")
 	}
+}
 
-	//Update
+// Update
+func Test_UpdateUser(t *testing.T) {
 	u3 := model.User{
 		Data: model.Data{
 			FirstName: "test_first_name_02",
@@ -87,8 +101,10 @@ func Test_User(t *testing.T) {
 	if updResp.StatusCode != http.StatusNoContent {
 		log.Fatalln("update: status code doesn't match")
 	}
+}
 
-	//Delete
+// Delete
+func Test_DeleteUser(t *testing.T) {
 	delReq, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/user/"+id, nil)
 	if err != nil {
 		log.Fatalf("delete: new request - %v\n", err)

@@ -3,11 +3,11 @@ package users
 import (
 	"crud/pkg/user"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -42,6 +42,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -53,6 +54,8 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Printf("ID: %v\n", id)
+
 	u := user.User{
 		ID: id,
 	}
@@ -63,16 +66,19 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	d := strings.Fields(data[0])
-	u.Data.FirstName = d[0]
-	u.Data.LastName = d[1]
-	u.Data.Interests = d[2]
 
-	if err := json.NewEncoder(w).Encode(&u); err != nil {
-		log.Printf("encode - %v", err)
+	if err := json.Unmarshal([]byte(data), &u.Data); err != nil {
+		log.Printf("get User - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	if err := json.NewEncoder(w).Encode(&u); err != nil {
+		log.Printf("get User - %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 

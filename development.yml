@@ -1,9 +1,5 @@
-configs:
-    driver: postgres
-    host: "172.22.0.2"
-    port: "5432"
-    username: postgres
-    dbname: postgres
-    password: qwerty
-    sslmode: disable
+port: ":8080"
+
+dbDriver: "postgres"
+databaseURL: "host=localhost port=5432 user=postgres dbname=postgres password=qwerty sslmode=disable"
 # 172.22.0.2
