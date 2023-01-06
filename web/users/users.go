@@ -3,7 +3,6 @@ package users
 import (
 	"crud/pkg/user"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -53,8 +52,6 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Printf("ID: %v\n", id)
 
 	u := user.User{
 		ID: id,
