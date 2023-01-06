@@ -57,20 +57,14 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	}
 
-	data, err := u.GetUserByID()
+	user, err := u.GetUserByID()
 	if err != nil {
 		log.Printf("get User - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	if err := json.Unmarshal([]byte(data), &u.Data); err != nil {
-		log.Printf("get User - %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(&u); err != nil {
+	if err := json.NewEncoder(w).Encode(&user); err != nil {
 		log.Printf("get User - %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return

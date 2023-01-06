@@ -60,8 +60,6 @@ func Test_ReadUser(t *testing.T) {
 		log.Fatalf("read: read ioutil - %v\n", err)
 	}
 
-	fmt.Printf("DATA: %T\n", data)
-
 	if err := json.Unmarshal(data, &u2); err != nil {
 		log.Fatalf("read: unmarshal - %v\n", err)
 	}

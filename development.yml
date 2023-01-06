@@ -1,6 +1,6 @@
 port: ":8080"
 
 dbDriver: "postgres"
-databaseURL: "host=postgres port=5432 user=postgres dbname=postgres password=qwerty sslmode=disable"
+databaseURL: "host=0.0.0.0 port=5432 user=postgres dbname=postgres password=qwerty sslmode=disable"
 # Set 0.0.0.0 for host if connection locally
 # Set 'postgres' or $CONTAINER_NAME fields value if connection through docker-compose
