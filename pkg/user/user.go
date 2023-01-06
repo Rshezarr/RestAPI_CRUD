@@ -33,7 +33,7 @@ func (u *User) CreateUser() error {
 func (u *User) GetUserByID() (User, error) {
 	var user User
 	var data string
-	fmt.Println(u.ID)
+
 	if err := db.DB.Get(&data, `SELECT data FROM users WHERE id = $1;`, u.ID); err != nil {
 		return User{}, fmt.Errorf("pkg: get user get - %w", err)
 	}
